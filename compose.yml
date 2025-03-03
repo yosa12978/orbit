@@ -1,0 +1,35 @@
+services:
+  orbit:
+    container_name: orbit-web
+    build:
+      context: .
+      dockerfile: air.dockerfile
+    restart: unless-stopped
+    ports:
+      - 5000:80/tcp
+    volumes:
+      - ".:/app"
+    healthcheck:
+      test: curl -f http://localhost/health
+      interval: 1m
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      valkey:
+        condition: service_healthy
+  valkey:
+    container_name: orbit-valkey
+    image: valkey/valkey:latest
+    volumes:
+      - ./valkey.conf:/etc/valkey/valkey.conf
+      - valkey-data:/data
+    command: ["valkey-server", "/etc/valkey/valkey.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  valkey-data:
