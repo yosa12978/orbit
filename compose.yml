@@ -21,6 +21,7 @@ services:
   valkey:
     container_name: orbit-valkey
     image: valkey/valkey:latest
+    restart: unless-stopped
     volumes:
       - ./valkey.conf:/etc/valkey/valkey.conf
       - valkey-data:/data
