@@ -2,7 +2,7 @@ app:
   name: orbit-dev
 server:
   instance_id: 0
-  hostname: localhost
+  hostname: localhost:5000
   addr: 0.0.0.0:80
 redis:
   addr: orbit-valkey:6379

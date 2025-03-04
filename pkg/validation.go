@@ -1,12 +1,16 @@
 package pkg
 
 import (
-	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 type ValidationError map[string]string
 
-func (v ValidationError) Error() string {
-	errJson, _ := json.Marshal(v)
-	return string(errJson)
+func (e ValidationError) Error() string {
+	errs := make([]string, 0, len(e))
+	for k, v := range e {
+		errs = append(errs, fmt.Sprintf("%s - %s", k, v))
+	}
+	return strings.Join(errs, "\n")
 }

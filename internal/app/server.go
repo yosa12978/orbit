@@ -17,9 +17,11 @@ func newServer(ctx context.Context, logger *slog.Logger, conf config.Config) htt
 	router := router.New(router.Options{
 		SnippetService: snippetService,
 		Logger:         logger,
+		Config:         config.Get(),
 	})
 	return http.Server{
-		Addr:    conf.Server.Addr,
-		Handler: router,
+		Addr:           conf.Server.Addr,
+		Handler:        router,
+		MaxHeaderBytes: 1 << 20,
 	}
 }

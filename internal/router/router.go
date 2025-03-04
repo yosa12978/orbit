@@ -3,6 +3,7 @@ package router
 import (
 	"log/slog"
 	"net/http"
+	"orbit-app/internal/config"
 	"orbit-app/internal/endpoints"
 	"orbit-app/internal/middleware"
 	"orbit-app/internal/services"
@@ -11,6 +12,7 @@ import (
 type Options struct {
 	SnippetService services.SnippetService
 	Logger         *slog.Logger
+	Config         config.Config
 }
 
 func New(opt Options) http.Handler {
@@ -31,6 +33,12 @@ func addRoutes(router *http.ServeMux, opt Options) {
 		w.Write([]byte("healthy"))
 	})
 
-	router.HandleFunc("PUT /", endpoints.PutSnippet(opt.SnippetService, opt.Logger))
-	router.HandleFunc("GET /{id}", endpoints.GetSnippetByID(opt.SnippetService, opt.Logger))
+	router.HandleFunc(
+		"PUT /",
+		endpoints.CreateSnippet(opt.SnippetService, opt.Logger, opt.Config.Server.Host).Unwrap(),
+	)
+	router.HandleFunc(
+		"GET /{id}",
+		endpoints.GetSnippetByID(opt.SnippetService, opt.Logger).Unwrap(),
+	)
 }
