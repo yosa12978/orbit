@@ -7,6 +7,7 @@ import (
 	"orbit-app/internal/endpoints"
 	"orbit-app/internal/middleware"
 	"orbit-app/internal/services"
+	"orbit-app/pkg"
 )
 
 type Options struct {
@@ -21,6 +22,7 @@ func New(opt Options) http.Handler {
 	handler := middleware.Pipeline(
 		router,
 		middleware.Logger(opt.Logger),
+		middleware.ContentType(opt.Logger),
 		middleware.StripSlash(),
 		middleware.Recovery(opt.Logger),
 	)
@@ -33,12 +35,33 @@ func addRoutes(router *http.ServeMux, opt Options) {
 		w.Write([]byte("healthy"))
 	})
 
+	router.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		pkg.RenderTemplate(w, "home", "Home page", nil)
+	})
+
 	router.HandleFunc(
 		"PUT /",
-		endpoints.CreateSnippet(opt.SnippetService, opt.Logger, opt.Config.Server.Host).Unwrap(),
+		endpoints.CreateSnippet(
+			opt.SnippetService,
+			opt.Logger,
+			opt.Config.Server.Host,
+		).Unwrap(),
 	)
+
+	router.HandleFunc(
+		"POST /",
+		endpoints.CreateSnippet(
+			opt.SnippetService,
+			opt.Logger,
+			opt.Config.Server.Host,
+		).Unwrap(),
+	)
+
 	router.HandleFunc(
 		"GET /{id}",
-		endpoints.GetSnippetByID(opt.SnippetService, opt.Logger).Unwrap(),
+		endpoints.GetSnippetByID(
+			opt.SnippetService,
+			opt.Logger,
+		).Unwrap(),
 	)
 }

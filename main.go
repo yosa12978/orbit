@@ -1,9 +1,15 @@
 package main
 
-import "orbit-app/internal/app"
+import (
+	"embed"
+	"orbit-app/internal/app"
+)
+
+//go:embed templates/*
+var templates embed.FS
 
 func main() {
-	if err := app.New().Run(); err != nil {
+	if err := app.New(templates).Run(); err != nil {
 		panic(err)
 	}
 }

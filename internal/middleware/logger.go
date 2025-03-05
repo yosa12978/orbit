@@ -28,6 +28,7 @@ func Logger(logger *slog.Logger) Middleware {
 				"latency_us", latency,
 				"status_code", writer.statusCode,
 				"method", r.Method,
+				"user_agent", r.UserAgent(),
 				"path", r.URL.Path,
 			)
 		})
