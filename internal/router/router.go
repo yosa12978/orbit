@@ -1,6 +1,7 @@
 package router
 
 import (
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"orbit-app/internal/config"
@@ -14,6 +15,7 @@ type Options struct {
 	SnippetService services.SnippetService
 	Logger         *slog.Logger
 	Config         config.Config
+	AssetsFS       fs.FS
 }
 
 func New(opt Options) http.Handler {
@@ -34,6 +36,11 @@ func addRoutes(router *http.ServeMux, opt Options) {
 		w.WriteHeader(200)
 		w.Write([]byte("healthy"))
 	})
+
+	router.Handle(
+		"GET /assets/",
+		http.StripPrefix("/assets", http.FileServer(http.FS(opt.AssetsFS))),
+	)
 
 	router.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		pkg.RenderTemplate(w, "home", "Home page", nil)

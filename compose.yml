@@ -9,12 +9,6 @@ services:
       - 5000:80/tcp
     volumes:
       - ".:/app"
-    healthcheck:
-      test: curl -f http://localhost/health
-      interval: 1m
-      timeout: 30s
-      retries: 5
-      start_period: 30s
     depends_on:
       valkey:
         condition: service_healthy

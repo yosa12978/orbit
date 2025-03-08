@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"orbit-app/internal/config"
@@ -11,13 +12,19 @@ import (
 	"orbit-app/internal/services"
 )
 
-func newServer(ctx context.Context, logger *slog.Logger, conf config.Config) http.Server {
+func newServer(
+	ctx context.Context,
+	logger *slog.Logger,
+	conf config.Config,
+	assetsFS fs.FS,
+) http.Server {
 	snippetRepo := repos.NewSnippetRepoRedis(data.Redis(ctx), logger)
 	snippetService := services.NewSnippetService(snippetRepo, logger)
 	router := router.New(router.Options{
 		SnippetService: snippetService,
 		Logger:         logger,
 		Config:         config.Get(),
+		AssetsFS:       assetsFS,
 	})
 	return http.Server{
 		Addr:           conf.Server.Addr,
